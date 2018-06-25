@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type"  content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Medios de transporte para asistir a eventos</title>
+	
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/angular-material.css">
+	<link rel="stylesheet" type="text/css" href="css/docs.css">	
+	<link rel="stylesheet" type="text/css" href="css/custom-marker.css">	
+	
+	<script>
+		function irA(url){
+			window.open(url,'_blank');
+		}
+		function cerrar(){
+			window.close();
+		}
+	</script>
+</head>
+<body>
+<div class="card bg-light mb-3" >
+  <div class="card-header">Acerca de.</div>
+  <div class="card-body">
+	<p>
+	<h3 class="card-title">Web desarrollada por<br/>  Jaume Balague Sans<br/>
+	para el Máster Inteligencia de Negocio y Big Data de la UOC</h3>
+</p>
+
+    <h3 class="card-title">Fuentes de datos de la aplicacion:</h3>
+    <ul>
+		<li><a href="#" onclick="irA('http://opendata-ajuntament.barcelona.cat/')">Servei de dades obertes de l'Ajuntament de Barcelona</a></li>
+	  	<li><a href="#" onclick="irA('https://www.tmb.cat/')">TMB - Transports Metropolitans de Barcelona</a></li>
+	  	<li><a href="#" onclick="irA('https://www.fgc.cat/')">FGC - Ferrocarrils Generalitat de Catalunys</a></li>
+	</ul>
+   
+  </div>
+</div>
+<div class="col-md-4 text-center"> 
+	<button type="button" class="btn btn-primary btn-lg" onclick="cerrar()">Cerrar</button>
+</div>
+</body>
+</html>

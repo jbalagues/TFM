@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type"  content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Eventos</title>
+	
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/angular-material.css">
+	<link rel="stylesheet" type="text/css" href="css/docs.css">	
+	<link rel="stylesheet" type="text/css" href="css/custom-marker.css">	
+	
+	<script src="js/angular.min.js"></script>
+	<script src="js/angular-animate.min.js"></script>
+	<script src="js/angular-route.min.js"></script>
+	<script src="js/angular-aria.min.js"></script>
+	<script src="js/angular-messages.min.js"></script>
+	<script src="js/angular-material.js"></script>
+	<script src="js/svg-assets-cache.js"></script>
+	<script src="js/moment.js"></script>
+	<script src="js/moment-with-locales.js"></script>
+	<script src="js/ng-map.js"></script>
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <script data-require="angular-ui-bootstrap@*" data-semver="0.6.0" src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.min.js"></script>
+    <script src="https://rawgithub.com/randallmeeker/ps-input-time/master/ps-input-time.js"></script>
+	
+	
+	<script
+		src="http://maps.google.com/maps/api/js?libraries=places&key=AIzaSyC_tMItv6FTewnJTga1o5pMv3O17MEJGe4&format=png&maptype=roadmap&style=feature:administrative.land_parcel%7Celement:labels%7Cvisibility:off&style=feature:poi%7Celement:labels.text%7Cvisibility:off&style=feature:poi.business%7Cvisibility:off&style=feature:poi.park%7Celement:labels.text%7Cvisibility:off&style=feature:road.local%7Celement:labels%7Cvisibility:off&size=480x360"></script>
+	<script src="app-controller.js"></script>
+
+</head>
+<body>
+	<!-- Menu superior con el logo y el botos de "Acerca de" -->
+	<ul class="header" style="height:12%">
+	  <li class="header">
+	  	<img src="img/logo-uoc.png" alt="uoc.edu" style="height: 50px;" > 
+	  </li>
+	  <li class="header">
+	  	<h1> Medios de transporte para asistir a eventos</h1>
+	  </li>
+	  <li class="header" style="float:right">
+	  	<a class="active" href="#about" onclick="window.open('about.html','_blank','directories=no,titlebar=no,toolbar=no,location=0,status=0,menubar=0,scrollbars=no,resizable=no,top=100,left=100,width=400,height=500px'); ">Acerca de</a>
+	  </li>
+	</ul>
+	
+	<!-- Parte principal -->
+	<div ng-app="eventosApp" ng-cloak="" ng-controller="EventosAppController" class="wrapper" style="height:88%">
+		<!-- Sidebar Holder -->
+		<nav id="sidebar">
+			<md-tabs md-dynamic-height="" md-border-bottom="" md-selected="tabselected"> 
+				<md-tab label="Buscador"> 
+					<md-content class="md-padding">
+						<div class="card" style="width: 100%;">
+  							<div class="card-body">
+								<ul class="list-unstyled components">
+									<li>
+										<label for="agendaSearch">Ciudad: </label><br/>							 
+										<select name="ciudadSearch" id="ciudadSearch">
+											<option	value="">Barcelona</option>										
+										</select>								
+									</li>
+									<li>
+										<label for="agendaSearch">Tipo: </label><br/>							 
+										<select name="agendaSearch" id="agendaSearch" ng-model="search.agenda" style="width: 100%;">
+											<option	value="">Todos</option>
+											<option ng-repeat="option in agendaList.data.agendas"
+													value="{{option.id}}">{{option.name}}</option>
+										</select>								
+									</li>
+									<li>
+										<label for="distritoSearch">Distrito: </label><br/>					
+										<select	name="distritoSearch" id="distritoSearch" ng-model="search.distrito">
+											<option	value="">Todos</option>
+											<option ng-repeat="option in distritoList.data.distritos"
+												value="{{option.id}}">{{option.name}}</option>
+										</select>
+									</li>
+									<li>
+										<label for="fechaSearch">Fecha del evento: </label><br/>		
+										<div class="row">
+											<div class="col"  style="width: 55%;">
+											 	<md-datepicker ng-model="search.fecha" class="dia-hora" md-placeholder="Seleccione una fecha" ></md-datepicker>
+											</div>
+											<div class="col"  style="width: 45%;">
+												<div class="row">
+													<div class="col" style="width: 90%;padding-left: 6px;padding-right: 6px;">
+														<input type="text" class="form-control dia-hora" data-ng-model="search.hora" ps-input-time />
+													
+													</div>
+												</div>
+											</div>
+										</div>
+									
+									</li>
+									<li>
+										<label for="radioSearch">Radio : </label>&nbsp; {{
+											radio_min + ((search.radio_percent * (radio_max- radio_min)) / 100)
+											}}m.<br> {{ radio_min }}m.&nbsp;
+										<input type="range" name="radioSearch" id="radioSearch"
+											 		ng-model="search.radio_percent" min="radio_min"
+													max="radio_max" ng-Change="calculateRadiusSearch()">&nbsp;{{radio_max }}m.
+									</li>
+								</ul>
+								<md-button class="md-raised md-primary" ng-click=buscar()>Buscar</md-button> 
+							</div>
+						</div>
+					</md-content> 
+				</md-tab> 
+				
+				<md-tab label="Eventos">
+					<!-- TAB de resultados --> 
+					<md-content class="md-padding">	
+						
+						<!--  Filtro y ordenación para los resultados -->		
+						<div class="card" id="eventosCard" style="width: 100%;">
+  							<div class="card-body" style="width: 80%;">    							
+  								<div class="row">
+									<div class="col"  style="width: 60%;">
+	  										<label for="eventosQuery">Buscar</label>
+									   		<input class="form-control" type="text" id="eventosQuery" name="query" ng-model="$scope.eventosQuery" style="font-size: 1.3rem" size="20"  maxlength="20">	
+	    							 </div>
+	 								 <div class="col" style="width: 40%;">
+	 										<label for="eventosOrder">Ordenar</label>
+			    							<select class="form-control" id="orderProp" ng-model="$scope.eventosOrder"   style="font-size:  1.3rem">
+								           		<option value="evento" selected>Nombre</option>
+								          		<option value="centro">Centro</option>
+								          		<option value="distrito">Distrito</option>								          		
+								        	</select>	
+	 								 </div>
+	 							</div>	
+							</div>
+						</div>
+						
+						<label for="evento"><h2>Eventos encontrados: </h2></label>	
+						<!--  Listado de resultados -->
+						<div class="panel-body" runat="server" style="overflow-y: scroll; height: 70vh;">   						 	
+							  <ul class="list-group list-group-flush" ng-repeat="m in eventosList.data.eventos  | filter:$scope.eventosQuery | orderBy:$scope.eventosOrder">
+							    <li class="list-group-item" style="width: 100%;margin-left: 0px;padding-left: 0px; border:0px">
+								    <div class="card" style="width:100%;"  ng-click="irEvento(m.idEvento)">
+								    	<div class="card-body">
+								    		<h4 class="card-title">{{m.evento}}</h4>
+								    		<h5 class="card-subtitle mb-2 text-muted">{{m.centro}} ({{m.distrito}})</h5>
+								    	 </div>
+								    </div>
+							    </li>
+							  </ul>					
+						</div>
+					</md-content>
+				</md-tab>
+				<md-tab label="Transporte">
+					<!-- TAB de presentacion --> 
+					<md-content class="md-padding">						
+					
+						<!--  Filtro y ordenación para los resultados -->		
+						<div class="card" id="eventosCard" style="width: 100%;">
+  							<div class="card-body" style="width: 80%;">    							
+  								<div class="row">
+								
+	 								 <div class="col" style="width: 100%;">
+	 										<label for="eventosOrder">Ordenar</label>
+			    							<select class="form-control" id="orderProp" ng-model="$scope.transporteOrder" style="font-size:  1.3rem">
+								           		<option value="cod_linea">Linea</option>
+								          		<option value="parada">Parada</option>
+								          		<option value="puntos">Puntos</option>								          		
+								        	</select>	
+	 								 </div>
+	 							</div>	
+	 							<div class="row">
+	 							 	<div class="col" style="width: 80%;">
+										<label for="distritoSelect">Radio : </label>&nbsp; {{
+											radio_min + ((radio_porcentaje * (radio_max- radio_min)) / 100)
+											}}m.<br> {{ radio_min }}m.&nbsp;
+										<input type="range"
+											name="range" ng-model="radio_porcentaje" min="radio_min"
+											max="radio_max" ng-Change="changeRadius()">&nbsp;{{
+											radio_max }}m.
+											 
+									 
+								</div>
+							</div>
+						</div>
+						
+						<label for="evento"><h2>Transporte disponible: </h2></label>					
+						<div class="panel-body" runat="server" style="overflow-y: scroll; height: 70vh;">   						
+							<ul class="list-group list-group-flush" style="font-size: 0.9em;" ng-repeat="m in coordenadasList.data.transportes | orderBy:$scope.transporteOrder">
+							    <li class="list-group-item" style="width: 100%;margin-left: 0px;padding-left: 0px; border:0px">
+								     <img ng-src="{{ m.icono }}" class="md-avatar" />{{m.cod_linea}} - {{m.parada}} <br/>[puntos: {{m.puntos}} distancia: {{m.distancia}} m.]
+							    </li>
+							</ul>						  
+						</div>
+					</md-content>
+				</md-tab>
+			</md-tabs>
+		</nav>
+
+		<!-- Page Content Holder -->
+		<div id="content">
+				<ng-map center="{{ barcelona_latitud }}, {{ barcelona_longitud }}" 	default-style="false" id="mapa">
+		
+				<!--  Evento-->
+				<marker id="evento" position="{{ barcelona_latitud }}, {{ barcelona_longitud }}"  on-click="map.showInfoWindow('bar')"  icon="img/evento.png">	
+			    <info-window id="bar" visible-on-marker="evento">
+		        	<div ng-non-bindable >
+		          		<div id="siteNotice" class="card-body">
+		          			<div ng-show="first">
+		          				<h5 class="card-title"></h5>Seleccione un evento mediante el buscador.</h5>
+		          			</div>
+		          			<div ng-show="!first">
+		          			 <div class="card-body text-center">
+		          				<h2 class="card-tex">Puntuación: {{eventoSeleccionado.puntos}}</h2>
+		          	   			<h5 class="card-title">{{eventoSeleccionado.evento}}</h5>	<br/>	
+				    			<h8 class="card-tex" >{{eventoSeleccionado.centro}}</h8>	<br/>		
+							
+					    		<h8 class="card-tex">{{eventoSeleccionado.direccion}}</h8><br/>
+					    		<h8 class="card-tex text-center" >{{eventoSeleccionado.distrito}}</h8><br/>
+					    		</div>
+				    		</div>
+		          		</div>
+		        	</div>
+		      	</info-window>
+		      	</marker>
+				<shape name="circle" centered="true" stroke-color="#3300ff" stroke-opacity="1"stroke-weight="2" 
+							fill-color="#FF0000" fill-opacity="0"
+							center="[{{ barcelona_latitud }}, {{ barcelona_longitud }}]"
+							radius="{{ratio_event}}"> 
+							
+				
+				<marker ng-repeat="m in coordenadasList.data.transportes"
+						        	position="{{ m.lat }}, {{ m.lon }}"
+						        	icon="{{m.icono}}"
+						       		data="{{m.cod_linea}}"
+						       		on-click="showData()";
+						       		title="{{m.cod_linea}} - {{m.parada}} (puntos: {{m.puntos}} - Distancia: {{m.distancia}}m)"></marker>
+				
+			</ng-map>
+		</div>
+
+
+
+	</div>
+
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	<!-- Bootstrap Js CDN -->
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#sidebarCollapse').on('click', function() {
+				$('#sidebar').toggleClass('active');
+			});
+		});
+	</script>
+
+</body>
+</html>
