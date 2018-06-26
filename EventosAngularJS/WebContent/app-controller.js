@@ -150,8 +150,10 @@ angular
 			    	$scope.eventoSeleccionado.puntos=0.0;
 			    	var length = $scope.coordenadasList.data.transportes.length;
 			    	for (i = 0; i < length; i++) {
+			    		console.log("puntos["+i+"]=" + $scope.coordenadasList.data.transportes[i].puntos);
 			    		//Sumo los puntos de transporte de cada resultado
 			    		$scope.eventoSeleccionado.puntos = $scope.eventoSeleccionado.puntos + parseFloat($scope.coordenadasList.data.transportes[i].puntos);
+			    		
 			    		$scope.coordenadasList.data.transportes[i].puntos = $scope.coordenadasList.data.transportes[i].puntos.toFixed(1);
 			    		//En funcion d ela agencia y el medio de transporte se asocia a cada punto de transporte un icono
 			    		if($scope.coordenadasList.data.transportes[i].agencia == "TMB"){
@@ -165,7 +167,7 @@ angular
 		    			}else if($scope.coordenadasList.data.transportes[i].agencia == "BICING"){
 		    				$scope.coordenadasList.data.transportes[i].icono="img/bicing.png";
 		    			}else if($scope.coordenadasList.data.transportes[i].agencia == "PARKING_BICI"){
-		    				$scope.coordenadasList.data.transportes[i].icono="img/pkBici";
+		    				$scope.coordenadasList.data.transportes[i].icono="img/pkBici.png";
 		    			}else if($scope.coordenadasList.data.transportes[i].agencia == "TAXI"){
 		    				$scope.coordenadasList.data.transportes[i].icono="img/taxi.png";
 		    			}else if($scope.coordenadasList.data.transportes[i].agencia == "PARKING"){
@@ -225,9 +227,11 @@ angular
 			    	$scope.eventoSeleccionado.puntos=0.0;
 			    	var length = $scope.coordenadasList.data.transportes.length;
 			    	for (i = 0; i < length; i++) {
+			    		console.log("puntos["+i+"]=" + $scope.coordenadasList.data.transportes[i].puntos);
 			    		//Sumo los puntos de transporte de cada resultado
 			    		$scope.eventoSeleccionado.puntos = $scope.eventoSeleccionado.puntos + parseFloat($scope.coordenadasList.data.transportes[i].puntos);
-		    			
+			    		
+			    		$scope.coordenadasList.data.transportes[i].puntos = $scope.coordenadasList.data.transportes[i].puntos.toFixed(1);
 			    		//En funcion d ela agencia y el medio de transporte se asocia a cada punto de transporte un icono
 			    		if($scope.coordenadasList.data.transportes[i].agencia == "TMB"){
 		    				if($scope.coordenadasList.data.transportes[i].tipo_ruta == "1"){
@@ -247,6 +251,7 @@ angular
 		    				$scope.coordenadasList.data.transportes[i].icono="img/aparcamiento.png";
 		    			}			    	  
 			    	};  
+			    	$scope.eventoSeleccionado.puntos = $scope.eventoSeleccionado.puntos.toFixed(0); 
 			    	
 			    	//$scope.eventosList = angular.fromJson(data);
 			    }, function(res){ 
